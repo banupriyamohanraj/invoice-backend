@@ -56,13 +56,12 @@ router.post('/list/:id',async(req,res)=>{
     try {
         let client = await MongoClient.connect(dbURL);
         let db = await client.db('organisation');
-        let data = await db.collection("Invoices-generated").findOne({  _id:ObjectID(req.body.id)});
+        let data = await db.collection("Invoices-generated").findOne({_id:ObjectID(req.body.id)});
         if(data){
             res.status(200).json(data);
         } else {
             res.status(404).json({ message: "data not found" })
         }
-        client.close();
     } catch (error) {
         console.log(error)
         res.status(500).json({ message: "Internal server error" })
