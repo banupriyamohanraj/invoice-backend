@@ -1,6 +1,6 @@
 require ("dotenv").config();
 const router = require('express').Router();
-const { MongoClient, ObjectID } = require('mongodb')
+const { MongoClient, ObjectId } = require('mongodb')
 const cors = require('cors')
 const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
@@ -36,7 +36,7 @@ router.put("/passwordreset", async (req, res) => {
                     const token = buffer.toString("hex")
                     console.log(token)
                     req.body.resetToken = token
-                 db.collection('users').findOneAndUpdate({ _id:ObjectID(id)},{$set:{token :token}}) 
+                 db.collection('users').findOneAndUpdate({ _id:ObjectId(id)},{$set:{token :token}}) 
             //  db.collection('logininfo').update({ _id:ObjectID(id),resetToken : req.body.resetToken}) 
             var mailOptions = {
                 from: "nodemailera91@gmail.com",

@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const {MongoClient,ObjectID} = require('mongodb')
+const {MongoClient,ObjectId} = require('mongodb')
 
 const dbURL = process.env.DB_URL || 'mongodb://127.0.0.1:27017'
 
@@ -32,7 +32,7 @@ async function getById(id){
     try {
         let client = await MongoClient.connect(dbURL);
         let db = await client.db('organisation');
-        let data = await db.collection("users").findOne({ _id : ObjectID(id) })
+        let data = await db.collection("users").findOne({ _id : ObjectId(id) })
         let user_id = data._id;
         console.log(user_id)
         return user_id;
