@@ -16,7 +16,8 @@
     "easyinvoice": "^1.0.144",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
-    "mongodb": "^4.0.0",
+    "mongo-objectid": "^1.2.2",
+    "mongodb": "^4.0.1",
     "nodemailer": "^6.6.3"
   }
 }
