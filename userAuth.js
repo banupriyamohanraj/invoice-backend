@@ -71,7 +71,7 @@ router.put("/passwordreset", async (req, res) => {
 router.post("/login", async (req, res) => {
     try {
         let client = await MongoClient.connect(dbURL);
-        let db = await client.db('organisation');
+        let db = client.db('organisation');
         let data = await db.collection("users").findOne({ email: req.body.email})
         if (data.status == 'Activated') {
             let isValid = await bcrypt.compare(req.body.password, data.password)
