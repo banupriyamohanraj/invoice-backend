@@ -11,10 +11,10 @@ const crypto = require('crypto');
 
 const dbURL = process.env.DB_URL || 'mongodb://127.0.0.1:27017'
 
-var transporter = nodemailer.createTransport({
-    service: "gmail",
+const transporter = nodemailer.createTransport({
+    service: "Gmail",
     auth: {
-        user: "nodemailera91@gmail.com",
+        user: process.env.NODEMAILER_EMAIL,
         pass: process.env.NODEMAILER_PASS
     }
 });
@@ -22,7 +22,7 @@ var transporter = nodemailer.createTransport({
 router.put("/passwordreset", async (req, res) => {
     try {
         let client = await MongoClient.connect(dbURL);
-        let db = await client.db('organisation');
+        let db =  client.db('organisation');
         let data = await db.collection("users").findOne({ email: req.body.email })
         if (data) {
            let id = data._id;
@@ -39,7 +39,7 @@ router.put("/passwordreset", async (req, res) => {
                  db.collection('users').findOneAndUpdate({ _id:ObjectId(id)},{$set:{token :token}}) 
             //  db.collection('logininfo').update({ _id:ObjectID(id),resetToken : req.body.resetToken}) 
             var mailOptions = {
-                from: "nodemailera91@gmail.com",
+                from: process.env.NODEMAILER_EMAIL,
                 to:  req.body.email,
                 subject: "Password Reset Link",
                 html: `<h4>To reset your password please click on this <a href="https://invoice-fe.netlify.app/resetpassword/${token}">link</a></h4>`
@@ -60,7 +60,7 @@ router.put("/passwordreset", async (req, res) => {
         } else {
             res.status(404).json({ message: "User not registered" })
         }
-        // client.close();
+        client.close();
     }
     catch (error) {
         console.log(error)
@@ -100,8 +100,8 @@ router.post("/login", async (req, res) => {
 router.post("/register", async (req, res) => {
     try {
         let client = await MongoClient.connect(dbURL);
-        let db = await client.db('organisation');
-        let data = await db.collection("users").findOne({ email: req.body.email, password: req.body.password })
+        let db =  await client.db('organisation');
+        let data = await db.collection("users").findOne({ email: req.body.email})
         if (!data) {
             let salt = await bcrypt.genSalt(10)
             let hash = await bcrypt.hash(req.body.password, salt)
@@ -114,30 +114,31 @@ router.post("/register", async (req, res) => {
                     const confirmationcode = buffer.toString("hex")
                     console.log(confirmationcode)
                     req.body.code = confirmationcode
-                  
-                  db.collection('users').insertOne(req.body)
-            
-           
-            var mailOptions = {
-                from: "nodemailera91@gmail.com",
-                to:  req.body.email,
-                subject: "Email Confirmation",
-                html: `<h2>Hello</h2>
-                <p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
-                <a href="https://invoice-fe.netlify.app/confirm/${confirmationcode}"> Click here</a>`
-            }
-           
-            transporter.sendMail(mailOptions, function (error, info) {
-                if (error) {
-                    console.log(error)
-                } else {
-                    console.log("email sent " + info.response)
+                     db.collection("users").insertOne(req.body)
+                  var mailOptions = {
+                    from: process.env.NODEMAILER_EMAIL,
+                    to:  req.body.email,
+                    subject: "Email Confirmation",
+                    html: `<h2>Hello</h2>
+                    <p>Thank you for subscribing. Please confirm your email by clicking on the following link</p>
+                    <a href="https://invoice-fe.netlify.app/confirm/${confirmationcode}"> Click here</a>`
                 }
-                 
-            })
+
+                transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                        console.log(error)
+                    } else {
+                        console.log("email sent " + info.response)
+                    }
+                    
+                })
+           
+           
+         
             res.status(200).json({ message: "user successfully registered" })
-                }
-            })
+        }
+    })
+     
            
         } else{
             res.send('user already exists')
@@ -160,7 +161,7 @@ router.post('/newpassword',async (req,res)=>{
         const sentToken = req.body.token;
     
         let client = await MongoClient.connect(dbURL);
-            let db = await client.db('organisation');
+            let db =  client.db('organisation');
             let user_token = await db.collection("users").findOne({ token : sentToken })
             if(!user_token){
                 res.status(401).json({message : "Invalid Token"})
@@ -185,7 +186,7 @@ router.put('/confirm',async(req,res)=>{
         const status = req.body.status
 
         let client = await MongoClient.connect(dbURL);
-        let db = await client.db('organisation');
+        let db =  client.db('organisation');
     let activation =  await db.collection("users").findOneAndUpdate({code : confirmationcode},{$set :{status : status,code:undefined} })
     if(activation){
         res.status(200).json({message:"Email activated"})
@@ -200,3 +201,6 @@ router.put('/confirm',async(req,res)=>{
 })
 
 module.exports = router;
+
+
+
