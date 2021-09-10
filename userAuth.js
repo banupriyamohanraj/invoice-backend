@@ -116,8 +116,6 @@ router.post("/register", async (req, res) => {
                     req.body.code = confirmationcode
                   
                   db.collection('users').insertOne(req.body)
-            
-           
             var mailOptions = {
                 from: process.env.NODEMAILER_ACC,
                 to:  req.body.email,
