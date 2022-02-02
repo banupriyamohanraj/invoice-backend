@@ -5,8 +5,6 @@ const{ObjectId}= require('mongodb');
 const cors = require('cors')
 var easyinvoice = require('easyinvoice');
 
-
-
 const dbURL = process.env.DB_URL || 'mongodb://127.0.0.1:27017'
 
 router.use(cors())
