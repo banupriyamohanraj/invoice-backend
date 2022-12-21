@@ -2,7 +2,7 @@ require ("dotenv").config();
 const router = require('express').Router();
 const { MongoClient, ObjectID } = require('mongodb')
 const cors = require('cors')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const nodemailer = require('nodemailer')
 var jwt = require('jsonwebtoken')
 const crypto = require('crypto');
